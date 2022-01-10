@@ -15,6 +15,7 @@ namespace Foydali_tozalovchibot.Controllers
 {
     public class BotController : Controller
     {
+        bool rekYubor = false;
         // msg types
         private static MessageType[] types = new MessageType[] {
             MessageType.Photo,
@@ -38,126 +39,143 @@ namespace Foydali_tozalovchibot.Controllers
             botClient.OnMessage += Xabar_Kelganda;
             botClient.OnCallbackQuery += InlineKeyboardButtonCallback;
             botClient.StartReceiving();
-            return "Bot Ishlamoqda";
+            return "Bot Ishlamoqda!";
         }
         private async void Xabar_Kelganda(object sender, MessageEventArgs e)
         {
-            try { 
-            //var x = e.Message;
-            Console.WriteLine(e.Message.Chat.LastName + "  =>  " + e.Message.Text);
-            long botId = 5063739606;
-            long chatId = e.Message.Chat.Id;
-            int msgId = e.Message.MessageId;
-            string msg = e.Message.Text;
-            var chatType = e.Message.Chat.Type;// Supergroup 
-            string msgType = e.Message.Type.ToString();
-            ///
-            var x = e.Message.Type;
-            bool d = x == MessageType.ChatMembersAdded;
-            var r = ChatType.Group;
-            /// 
-            ChatMemberStatus? role;
-            long? msgUserId = e.Message?.From?.Id;
+            try
+            {
+                //Console.WriteLine(Json.Parse(e.Message.Chat));
+                //var x = e.Message;
+                Console.WriteLine(e.Message.Chat.LastName + "  =>  " + e.Message.Text);
+                long botId = 5063739606;
+                long chatId = e.Message.Chat.Id;
+                int msgId = e.Message.MessageId;
+                string msg = e.Message.Text;
+                var chatType = e.Message.Chat.Type;// Supergroup 
+                MessageType msgType = e.Message.Type;
+                ///
+                var x = e.Message.Type;
+                bool d = x == MessageType.ChatMembersAdded;
+                var r = ChatType.Group;
+                /// 
+                ChatMemberStatus? role;
+                long? msgUserId = e.Message?.From?.Id;
 
-            try { role = botClient?.GetChatMemberAsync(chatId, botId)?.Result?.Status; }
-            catch { role = null; }
+                try { role = botClient?.GetChatMemberAsync(chatId, botId)?.Result?.Status; }
+                catch { role = null; }
 
-            // yuborilgan xabardagi matnni olish
-            if (types.Contains(e.Message.Type))
-            {
-                msg = e.Message.Caption;
-                await botClient.SendTextMessageAsync(adminId[0], msg);
-            }
-            
-            if (chatType.ToString() == "Supergroup" || chatType.ToString() == "Group")
-            {
-                if (role.ToString() == "Administrator")
+                // admin reklama yuborishi
+                if (rekYubor && adminId.Contains<long>(chatId))
                 {
-                    if (msgType == "ChatMemberLeft" || msgType == "ChatMembersAdded")
-                    {
-                        try
-                        {
-                            await botClient.DeleteMessageAsync(chatId, msgId);
-                            //await botClient.SendTextMessageAsync(chatId, chatType.ToString());
-                        }
-                        catch
-                        {
-                            await botClient.SendTextMessageAsync(chatId,
-                                "Botni adminstrator huquqlaridan xabarlarni o'chirish huquqini yoqing!",
-                                replyToMessageId: msgId);
-                            //await botClient.SendTextMessageAsync(chatId, chatType.ToString());
-                        }
-                    }
-                    else if (Yordamchi.Reklama(msg))
-                    {
-                        try
-                        {
-                            await botClient.DeleteMessageAsync(chatId, msgId);
-                            await botClient.SendTextMessageAsync(chatId,
-                                $"Hurmatli <a href='tg://user?id={msgUserId}'>{e.Message.From.FirstName}</a> bu guruhda reklama uzatish mumkin emas!",
-                                parseMode:ParseMode.Html);
-                        }
-                        catch
-                        {
-                            await botClient.SendTextMessageAsync(chatId,
-                                "Bot guruhdagi reklamalarni o'chirishi uchun botga Adminstrator huqularidan xabarlarni o'chirish huquqini yoqing! "
-                                + "Hurmatli Admin",
-                                replyToMessageId: msgId);
-                        }
-                    }
+                    await botClient.ForwardMessageAsync(adminId[1], chatId, msgId);
+                    rekYubor = false;
+                    await botClient.SendTextMessageAsync(chatId, "reklama yuborildi");
                 }
-                else
+
+                // yuborilgan xabardagi matnni olish
+                if (types.Contains(msgType))
                 {
-                    if (msgType == "ChatMemberLeft" || msgType == "ChatMembersAdded" || Yordamchi.Reklama(msg))
-                        await botClient.SendTextMessageAsync(chatId,
-                            "Bot guruhdagi kirdi chiqdilarni o'chirishi uchun botni guruhga admin qiling",
-                            replyToMessageId:msgId);
+                    msg = e.Message.Caption;
+                    await botClient.SendTextMessageAsync(adminId[0], msg);
+                    await botClient.SendTextMessageAsync(adminId[0], chatType.ToString());
+                    await botClient.SendTextMessageAsync(adminId[0], msgType.ToString());
                 }
-            }
-            // yuborilgan xabar matnligiga tekshirish
-            if (e.Message.Type == MessageType.Text)
-            {
-                // adminligigga tekshirish
-                if (adminId.Contains<long>(chatId))
+
+                if (chatType == ChatType.Supergroup || chatType == ChatType.Group)
                 {
-                    await botClient.SendTextMessageAsync(chatId, "siz adminsiz");
-                }
-                else
-                {
-                    if (msg == "/start")
+                    if (role == ChatMemberStatus.Administrator)
                     {
-                        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
-                            new InlineKeyboardButton[][]
+                        if (msgType == MessageType.ChatMemberLeft || msgType == MessageType.ChatMembersAdded)
+                        {
+                            try
                             {
-                                new InlineKeyboardButton[]
-                                {
-                                    InlineKeyboardButton
-                                        .WithCallbackData(text: "Bot haqida", callbackData: "info")
-                                },
-                                new InlineKeyboardButton[]
-                                {
-                                    InlineKeyboardButton.WithUrl(text: "➕ Gruppaga Qoʻshish➕",
-                                        url:$"t.me/{botUsername}?startgroup=new")
-                                },
-                                new InlineKeyboardButton[]
-                                {
-                                    InlineKeyboardButton.WithUrl(text:"saytga o'tamiz",
-                                        url:$"https://google.com/salom")
-                                }
+                                await botClient.DeleteMessageAsync(chatId, msgId);
+                                //await botClient.SendTextMessageAsync(chatId, chatType.ToString());
                             }
-                        );
-                        await botClient.SendTextMessageAsync(
-                           chatId: chatId,
-                           text: "Bu bot gruppangizdagi reklama va kirdi-chiqdilarini tozalaydi.",
-                           replyMarkup: markup
-                       );
+                            catch
+                            {
+                                await botClient.SendTextMessageAsync(chatId,
+                                    "Bot guruhdagi kirdi-chiqdilarni o'chirishi uchun botga Adminstrator huqularidan xabarlarni o'chirish huquqini yoqing! ",
+                                    replyToMessageId: msgId);
+                                //await botClient.SendTextMessageAsync(chatId, chatType.ToString());
+                            }
+                        }
+                        else if (Yordamchi.Reklama(msg))
+                        {
+                            try
+                            {
+                                await botClient.DeleteMessageAsync(chatId, msgId);
+                                await botClient.SendTextMessageAsync(chatId,
+                                    $"Hurmatli <a href='tg://user?id={msgUserId}'>{e.Message.From.FirstName}</a> bu guruhda reklama uzatish mumkin emas!",
+                                    parseMode: ParseMode.Html);
+                            }
+                            catch
+                            {
+                                await botClient.SendTextMessageAsync(chatId,
+                                    "Bot guruhdagi reklamalarni o'chirishi uchun botga Adminstrator huqularidan xabarlarni o'chirish huquqini yoqing! "
+                                    + "Hurmatli Admin",
+                                    replyToMessageId: msgId);
+                            }
+                        }
                     }
                     else
                     {
-                       // await botClient.SendTextMessageAsync(chatId, $"noto'g'ri so'z: {msg}", replyToMessageId: msgId);
+                        if (msgType == MessageType.ChatMemberLeft || msgType == MessageType.ChatMembersAdded || Yordamchi.Reklama(msg))
+                            await botClient.SendTextMessageAsync(chatId,
+                                "Bot guruhdagi kirdi chiqdilarni o'chirishi uchun botni guruhga admin qiling",
+                                replyToMessageId: msgId);
                     }
                 }
-            }
+                // yuborilgan xabar matnligiga tekshirish
+                if (msgType == MessageType.Text && chatType == ChatType.Private)
+                {
+                    // adminligigga tekshirish
+                    if (adminId.Contains<long>(chatId))
+                    {
+                        await botClient.SendTextMessageAsync(chatId, "siz admizsiz");
+                        if (msg == "/reklama")
+                        {
+                            await botClient.SendTextMessageAsync(chatId, "Reklama yuboring!");
+                            rekYubor = true;
+                        }
+                    }
+                    else
+                    {
+                        if (msg == "/start")
+                        {
+                            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
+                                new InlineKeyboardButton[][]
+                                {
+                                    new InlineKeyboardButton[]
+                                    {
+                                        InlineKeyboardButton
+                                            .WithCallbackData(text: "Bot haqida", callbackData: "info")
+                                    },
+                                    new InlineKeyboardButton[]
+                                    {
+                                        InlineKeyboardButton.WithUrl(text: "➕ Gruppaga Qoʻshish➕",
+                                            url:$"t.me/{botUsername}?startgroup=new")
+                                    },
+                                    new InlineKeyboardButton[]
+                                    {
+                                        InlineKeyboardButton.WithUrl(text:"saytga o'tamiz",
+                                            url:$"https://google.com/salom")
+                                    }
+                                }
+                            );
+                            await botClient.SendTextMessageAsync(
+                               chatId: chatId,
+                               text: "Bu bot gruppangizdagi reklama va kirdi-chiqdilarini tozalaydi.",
+                               replyMarkup: markup
+                           );
+                        }
+                        else
+                        {
+                            await botClient.SendTextMessageAsync(chatId, $"noto'g'ri so'z: {msg}", replyToMessageId: msgId);
+                        }
+                    }
+                }
                 //            else
                 //            {
                 //                await botClient.SendTextMessageAsync(chatId,
@@ -166,7 +184,7 @@ namespace Foydali_tozalovchibot.Controllers
                 //", replyToMessageId: msgId);
                 //
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await botClient.SendTextMessageAsync(adminId[0], ex.Message);
             }
@@ -176,6 +194,17 @@ namespace Foydali_tozalovchibot.Controllers
             if (e.CallbackQuery.Data != "join Group")
                 await botClient
                    .SendTextMessageAsync(e.CallbackQuery.From.Id, e.CallbackQuery.Data);
+        }
+        public IActionResult Info()
+        {
+            return View();
+        }
+
+
+        [Route("/NotFound")]
+        public IActionResult NotFound()
+        {
+            return View();
         }
     }
 }

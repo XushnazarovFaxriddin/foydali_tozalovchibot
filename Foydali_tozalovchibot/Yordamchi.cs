@@ -20,7 +20,7 @@ namespace Foydali_tozalovchibot
             {
                 return (str.Contains(".io") || str.Contains("http://") || str.Contains("https://")
                     || str.Contains(".uz") || str.Contains("bot?start=") || str.Contains(".ru")
-                    || str.Contains(".com") || str.Contains(".me"));
+                    || str.Contains(".com") || str.Contains(".me") || str.Contains('@'));
             }
             catch { return false; }
         }

@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\source\\repos\\Foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj": {}
+    "C:\\Users\\USER\\Source\\Repos\\foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\source\\repos\\Foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj": {
+    "C:\\Users\\USER\\Source\\Repos\\foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\source\\repos\\Foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\Source\\Repos\\foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj",
         "projectName": "Foydali_tozalovchibot",
-        "projectPath": "C:\\Users\\user\\source\\repos\\Foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj",
-        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\source\\repos\\Foydali_tozalovchibot\\Foydali_tozalovchibot\\obj\\",
+        "projectPath": "C:\\Users\\USER\\Source\\Repos\\foydali_tozalovchibot\\Foydali_tozalovchibot\\Foydali_tozalovchibot.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\USER\\Source\\Repos\\foydali_tozalovchibot\\Foydali_tozalovchibot\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
@@ -62,12 +59,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[5.0.13, 5.0.13]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
