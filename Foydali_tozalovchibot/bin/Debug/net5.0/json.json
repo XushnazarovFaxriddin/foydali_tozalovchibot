@@ -1,0 +1,27 @@
+{
+  "update_id": 671773745,
+  "message": {
+    "message_id": 401,
+    "from": {
+      "id": 1092338349,
+      "is_bot": false,
+      "first_name": "Faxriddin",
+      "last_name": "Xushnazarov",
+      "username": "Xushnazarov_555",
+      "language_code": "ru"
+    },
+    "date": 1641918006,
+    "chat": {
+      "id": -1001164983220,
+      "type": "supergroup",
+      "title": ".NET Uzbekistan",
+      "username": "dotNET_Uzbekistan"
+    },
+    "left_chat_member": {
+      "id": 5063739606,
+      "is_bot": true,
+      "first_name": "Foydali Tozalovchi Bot",
+      "username": "foydali_tozalovchibot"
+    }
+  }
+}

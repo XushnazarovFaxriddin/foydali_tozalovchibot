@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.ReplyMarkups;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Foydali_tozalovchibot.Controllers
 {
@@ -37,6 +40,7 @@ namespace Foydali_tozalovchibot.Controllers
         public string Index()
         {
             botClient.OnMessage += Xabar_Kelganda;
+            botClient.OnUpdate += Xabar_Yangilanganda;
             botClient.OnCallbackQuery += InlineKeyboardButtonCallback;
             botClient.StartReceiving();
             return "Bot Ishlamoqda!";
@@ -45,9 +49,8 @@ namespace Foydali_tozalovchibot.Controllers
         {
             try
             {
-                //Console.WriteLine(Json.Parse(e.Message.Chat));
-                //var x = e.Message;
-                Console.WriteLine(e.Message.Chat.LastName + "  =>  " + e.Message.Text);
+                //Console.WriteLine(JsonConvert.SerializeObject(e.Message));
+               
                 long botId = 5063739606;
                 long chatId = e.Message.Chat.Id;
                 int msgId = e.Message.MessageId;
@@ -60,7 +63,10 @@ namespace Foydali_tozalovchibot.Controllers
                 var r = ChatType.Group;
                 /// 
                 ChatMemberStatus? role;
-                long? msgUserId = e.Message?.From?.Id;
+                ChatMemberStatus? userRole;
+                long msgUserId = e.Message.From.Id;
+                try { userRole=botClient.GetChatMemberAsync(chatId,msgUserId)?.Result?.Status; }
+                catch { userRole=null; }
 
                 try { role = botClient?.GetChatMemberAsync(chatId, botId)?.Result?.Status; }
                 catch { role = null; }
@@ -84,7 +90,7 @@ namespace Foydali_tozalovchibot.Controllers
 
                 if (chatType == ChatType.Supergroup || chatType == ChatType.Group)
                 {
-                    if (role == ChatMemberStatus.Administrator)
+                    if (role == ChatMemberStatus.Administrator )
                     {
                         if (msgType == MessageType.ChatMemberLeft || msgType == MessageType.ChatMembersAdded)
                         {
@@ -101,7 +107,7 @@ namespace Foydali_tozalovchibot.Controllers
                                 //await botClient.SendTextMessageAsync(chatId, chatType.ToString());
                             }
                         }
-                        else if (Yordamchi.Reklama(msg))
+                        else if (Yordamchi.Reklama(msg) && !(userRole == ChatMemberStatus.Administrator || userRole == ChatMemberStatus.Creator))
                         {
                             try
                             {
@@ -195,6 +201,12 @@ namespace Foydali_tozalovchibot.Controllers
                 await botClient
                    .SendTextMessageAsync(e.CallbackQuery.From.Id, e.CallbackQuery.Data);
         }
+
+        private async void Xabar_Yangilanganda(object sender, UpdateEventArgs e)
+        {
+            await System.IO.File.WriteAllTextAsync("json.json", JsonConvert.SerializeObject(e.Update));
+        }
+
         public IActionResult Info()
         {
             return View();

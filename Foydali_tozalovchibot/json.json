@@ -1,0 +1,29 @@
+{
+  "update_id": 671773750,
+  "message": {
+    "message_id": 408,
+    "from": {
+      "id": 1716425273,
+      "is_bot": false,
+      "first_name": "Coder",
+      "last_name": ".NET",
+      "username": "coder_xushnazarov"
+    },
+    "date": 1641918423,
+    "chat": {
+      "id": -1001164983220,
+      "type": "supergroup",
+      "title": ".NET Uzbekistan",
+      "username": "dotNET_Uzbekistan"
+    },
+    "new_chat_members": [
+      {
+        "id": 1716425273,
+        "is_bot": false,
+        "first_name": "Coder",
+        "last_name": ".NET",
+        "username": "coder_xushnazarov"
+      }
+    ]
+  }
+}
