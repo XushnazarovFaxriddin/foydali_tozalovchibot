@@ -1,27 +1,40 @@
 {
-  "update_id": 671773745,
-  "message": {
-    "message_id": 401,
+  "update_id": 671773777,
+  "my_chat_member": {
+    "chat": {
+      "id": 1358633109,
+      "type": "private",
+      "username": "Tohirov_Fatkhiddin",
+      "first_name": "????????????????????",
+      "last_name": "????????????????"
+    },
     "from": {
-      "id": 1092338349,
+      "id": 1358633109,
       "is_bot": false,
-      "first_name": "Faxriddin",
-      "last_name": "Xushnazarov",
-      "username": "Xushnazarov_555",
+      "first_name": "????????????????????",
+      "last_name": "????????????????",
+      "username": "Tohirov_Fatkhiddin",
       "language_code": "ru"
     },
-    "date": 1641918006,
-    "chat": {
-      "id": -1001164983220,
-      "type": "supergroup",
-      "title": ".NET Uzbekistan",
-      "username": "dotNET_Uzbekistan"
+    "date": 1641973826,
+    "old_chat_member": {
+      "user": {
+        "id": 5063739606,
+        "is_bot": true,
+        "first_name": "Foydali Tozalovchi Bot",
+        "username": "foydali_tozalovchibot"
+      },
+      "status": "member"
     },
-    "left_chat_member": {
-      "id": 5063739606,
-      "is_bot": true,
-      "first_name": "Foydali Tozalovchi Bot",
-      "username": "foydali_tozalovchibot"
+    "new_chat_member": {
+      "user": {
+        "id": 5063739606,
+        "is_bot": true,
+        "first_name": "Foydali Tozalovchi Bot",
+        "username": "foydali_tozalovchibot"
+      },
+      "status": "kicked",
+      "until_date": 0
     }
   }
 }

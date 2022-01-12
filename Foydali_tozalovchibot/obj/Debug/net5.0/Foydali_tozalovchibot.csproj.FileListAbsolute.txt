@@ -40,3 +40,4 @@ C:\Users\USER\Source\Repos\foydali_tozalovchibot\Foydali_tozalovchibot\bin\Debug
 C:\Users\USER\Source\Repos\foydali_tozalovchibot\Foydali_tozalovchibot\obj\Debug\net5.0\Foydali_tozalovchibot.Views.pdb
 C:\Users\USER\Source\Repos\foydali_tozalovchibot\Foydali_tozalovchibot\obj\Debug\net5.0\Razor\Views\Bot\NotFound.cshtml.g.cs
 C:\Users\USER\Source\Repos\foydali_tozalovchibot\Foydali_tozalovchibot\bin\Debug\net5.0\json.json
+C:\Users\USER\Source\Repos\foydali_tozalovchibot\Foydali_tozalovchibot\bin\Debug\net5.0\db.json

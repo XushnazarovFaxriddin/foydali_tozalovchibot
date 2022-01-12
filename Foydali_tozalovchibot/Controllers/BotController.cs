@@ -18,6 +18,11 @@ namespace Foydali_tozalovchibot.Controllers
 {
     public class BotController : Controller
     {
+        //Bot ulangan domen
+        string url = "hali bu yeri chala" + @"/Bot/Info";
+        // DB list
+        private static List<DB> dBs = default;
+        // rek yuborish un kk
         bool rekYubor = false;
         // msg types
         private static MessageType[] types = new MessageType[] {
@@ -47,15 +52,16 @@ namespace Foydali_tozalovchibot.Controllers
         }
         private async void Xabar_Kelganda(object sender, MessageEventArgs e)
         {
+            //await botClient.SendTextMessageAsync(adminId[0], JsonConvert.SerializeObject(e.Message));
             try
             {
                 //Console.WriteLine(JsonConvert.SerializeObject(e.Message));
-               
+
                 long botId = 5063739606;
                 long chatId = e.Message.Chat.Id;
                 int msgId = e.Message.MessageId;
                 string msg = e.Message.Text;
-                var chatType = e.Message.Chat.Type;// Supergroup 
+                var chatType = e.Message.Chat.Type;// Supergroup Group vahokazo
                 MessageType msgType = e.Message.Type;
                 ///
                 var x = e.Message.Type;
@@ -65,8 +71,8 @@ namespace Foydali_tozalovchibot.Controllers
                 ChatMemberStatus? role;
                 ChatMemberStatus? userRole;
                 long msgUserId = e.Message.From.Id;
-                try { userRole=botClient.GetChatMemberAsync(chatId,msgUserId)?.Result?.Status; }
-                catch { userRole=null; }
+                try { userRole = botClient.GetChatMemberAsync(chatId, msgUserId)?.Result?.Status; }
+                catch { userRole = null; }
 
                 try { role = botClient?.GetChatMemberAsync(chatId, botId)?.Result?.Status; }
                 catch { role = null; }
@@ -74,23 +80,39 @@ namespace Foydali_tozalovchibot.Controllers
                 // admin reklama yuborishi
                 if (rekYubor && adminId.Contains<long>(chatId))
                 {
-                    await botClient.ForwardMessageAsync(adminId[1], chatId, msgId);
+                    int count = 0;
+                    dBs.ForEach(async (s) =>
+                    {
+                        try
+                        {
+                            await botClient.ForwardMessageAsync(s.chatId, chatId, msgId);
+                            count++;
+                        }
+                        catch { }
+                    });
                     rekYubor = false;
-                    await botClient.SendTextMessageAsync(chatId, "reklama yuborildi");
+                    await botClient.SendTextMessageAsync(chatId, $"reklama {count} ta guruh va foydalanuvchilarga yuborildi yuborildi");
+                    /* await botClient.ForwardMessageAsync(adminId[1], chatId, msgId);
+                     rekYubor = false;
+                     await botClient.SendTextMessageAsync(chatId, "reklama yuborildi");*/
                 }
 
                 // yuborilgan xabardagi matnni olish
                 if (types.Contains(msgType))
                 {
-                    msg = e.Message.Caption;
-                    await botClient.SendTextMessageAsync(adminId[0], msg);
-                    await botClient.SendTextMessageAsync(adminId[0], chatType.ToString());
-                    await botClient.SendTextMessageAsync(adminId[0], msgType.ToString());
+                    try
+                    {
+                        msg = e.Message.Caption;
+                    }
+                    catch
+                    {
+                        msg = "ERROR!";
+                    }
                 }
 
                 if (chatType == ChatType.Supergroup || chatType == ChatType.Group)
                 {
-                    if (role == ChatMemberStatus.Administrator )
+                    if (role == ChatMemberStatus.Administrator)
                     {
                         if (msgType == MessageType.ChatMemberLeft || msgType == MessageType.ChatMembersAdded)
                         {
@@ -139,7 +161,11 @@ namespace Foydali_tozalovchibot.Controllers
                     // adminligigga tekshirish
                     if (adminId.Contains<long>(chatId))
                     {
-                        await botClient.SendTextMessageAsync(chatId, "siz admizsiz");
+                        await botClient.SendTextMessageAsync(chatId, "Assalomu aleykum siz ushbu botning adminisiz!\n" +
+                            "Reklama yuborish uchun /reklama ga bosing.\n" +
+                            $"Bot statistikasini ko'rish uchun <a href='{url}'>bot haqida</a> ga bosing.\n" +
+                            $"Botni guruhga qoshish uchun <a href='t.me/{botUsername}?startgroup=new'>bu yerga</a> bosing.\n" +
+                            $"\n\nDasturchi <a href='tg://user?id={msgUserId}'>Faxriddin Xushnazarov</a>", parseMode: ParseMode.Html);
                         if (msg == "/reklama")
                         {
                             await botClient.SendTextMessageAsync(chatId, "Reklama yuboring!");
@@ -178,17 +204,10 @@ namespace Foydali_tozalovchibot.Controllers
                         }
                         else
                         {
-                            await botClient.SendTextMessageAsync(chatId, $"noto'g'ri so'z: {msg}", replyToMessageId: msgId);
+                            await botClient.SendTextMessageAsync(chatId, $"Botning vazifasini batafsil bilish uchun /start bosing yoki <a href='{url}'>Bot Haqida</a> ga bosing.", replyToMessageId: msgId, parseMode: ParseMode.Html);
                         }
                     }
                 }
-                //            else
-                //            {
-                //                await botClient.SendTextMessageAsync(chatId,
-                //                    @$"Bot faqat matnli xabarlarga javob qaytaradi:
-                //{role.ToString()}
-                //", replyToMessageId: msgId);
-                //
             }
             catch (Exception ex)
             {
@@ -204,9 +223,98 @@ namespace Foydali_tozalovchibot.Controllers
 
         private async void Xabar_Yangilanganda(object sender, UpdateEventArgs e)
         {
-            await System.IO.File.WriteAllTextAsync("json.json", JsonConvert.SerializeObject(e.Update));
+            try
+            {
+                //await System.IO.File.WriteAllTextAsync("json.json", JsonConvert.SerializeObject(e.Update));
+                if (JsonConvert.SerializeObject(e.Update.MyChatMember) != "null")
+                {
+                    dynamic status = e.Update?.MyChatMember?.NewChatMember?.Status;
+                    if (status == ChatMemberStatus.Administrator)
+                    {
+                        await botClient.SendTextMessageAsync(e.Update.MyChatMember.Chat.Id, "Bot guruhda administrator bo'ldi!");
+                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "up");
+                    }
+                    else if (status == ChatMemberStatus.Member)
+                    {
+                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "add");
+                    }
+                    else if (status == ChatMemberStatus.Left)
+                    {
+                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "del");
+                    }
+                    else if (status == ChatMemberStatus.Kicked)
+                    {
+                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "del");
+                    }
+                    else if (status == ChatMemberStatus.Restricted)
+                    {
+                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "add");
+                    }
+                    //await botClient.SendTextMessageAsync(adminId[0], JsonConvert.SerializeObject(status));
+                }
+            }
+            catch (Exception ex)
+            {
+                await botClient.SendTextMessageAsync(adminId[0], "Xabar_Yangilanganda delegatetidan error:\n" + ex.Message);
+            }
         }
 
+        // funk ga "del", "add", "up" yuborish mumkin
+        private async void fun(ChatId id, ChatType type, ChatMemberStatus status, string funk)
+        {
+            try
+            {
+                if (funk == "add")
+                {
+                    dBs.Add(new DB()
+                    {
+                        chatId = id,
+                        chatType = type,
+                        status = status,
+                    });
+                    await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
+                    dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
+                    return;
+                }
+                dBs.ForEach(async dbx =>
+                {
+                    if (dbx.chatId == id)
+                    {
+                        if (funk == "del")
+                        {
+                            dBs.Remove(dbx);
+                            await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
+                            dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
+                            return;
+                        }
+                        else if (funk == "up")
+                        {
+                            dBs.Remove(dbx);
+                            dbx.chatId = id;
+                            dbx.chatType = type;
+                            dbx.status = status;
+                            dBs.Add(dbx);
+                            await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
+                            dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
+                            return;
+                        }
+                    }
+                });
+                dBs.Add(new DB()
+                {
+                    chatId = id,
+                    chatType = type,
+                    status = status,
+                });
+                await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
+                dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
+                return;
+            }
+            catch (Exception ex)
+            {
+                await botClient.SendTextMessageAsync(adminId[0], "fun funksiyasidan error:\n" + ex.Message);
+            }
+        }
         public IActionResult Info()
         {
             return View();
