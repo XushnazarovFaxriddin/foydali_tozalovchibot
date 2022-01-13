@@ -9,9 +9,9 @@ namespace Foydali_tozalovchibot
 {
     public class DB
     {
-        public ChatId chatId { get; set; }
-        public ChatType chatType { get; set; }
-        public ChatMemberStatus status { get; set; }
+        public ChatId? chatId { get; set; }
+        public ChatType? chatType { get; set; }
+        public ChatMemberStatus? status { get; set; }
 
     }
 }

@@ -19,9 +19,7 @@ namespace Foydali_tozalovchibot.Controllers
     public class BotController : Controller
     {
         //Bot ulangan domen
-        string url = "hali bu yeri chala" + @"/Bot/Info";
-        // DB list
-        private static List<DB> dBs = default;
+        string url = "https://google.com" + @"/Bot/Info";
         // rek yuborish un kk
         bool rekYubor = false;
         // msg types
@@ -81,7 +79,7 @@ namespace Foydali_tozalovchibot.Controllers
                 if (rekYubor && adminId.Contains<long>(chatId))
                 {
                     int count = 0;
-                    dBs.ForEach(async (s) =>
+                    Program.dBs.ForEach(async (s) =>
                     {
                         try
                         {
@@ -161,11 +159,12 @@ namespace Foydali_tozalovchibot.Controllers
                     // adminligigga tekshirish
                     if (adminId.Contains<long>(chatId))
                     {
-                        await botClient.SendTextMessageAsync(chatId, "Assalomu aleykum siz ushbu botning adminisiz!\n" +
-                            "Reklama yuborish uchun /reklama ga bosing.\n" +
-                            $"Bot statistikasini ko'rish uchun <a href='{url}'>bot haqida</a> ga bosing.\n" +
-                            $"Botni guruhga qoshish uchun <a href='t.me/{botUsername}?startgroup=new'>bu yerga</a> bosing.\n" +
-                            $"\n\nDasturchi <a href='tg://user?id={msgUserId}'>Faxriddin Xushnazarov</a>", parseMode: ParseMode.Html);
+                        if (msg != "/reklama")
+                            await botClient.SendTextMessageAsync(chatId, "Assalomu aleykum siz ushbu botning adminisiz!\n" +
+                                "Reklama yuborish uchun /reklama ga bosing.\n" +
+                                $"Bot statistikasini ko'rish uchun <a href='{url}'>bot haqida</a> ga bosing.\n" +
+                                $"Botni guruhga qoshish uchun <a href='t.me/{botUsername}?startgroup=new'>bu yerga</a> bosing.\n" +
+                                $"\n\nDasturchi <a href='tg://user?id={msgUserId}'>Faxriddin Xushnazarov</a>", parseMode: ParseMode.Html);
                         if (msg == "/reklama")
                         {
                             await botClient.SendTextMessageAsync(chatId, "Reklama yuboring!");
@@ -178,12 +177,12 @@ namespace Foydali_tozalovchibot.Controllers
                         {
                             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                                 new InlineKeyboardButton[][]
-                                {
+                                {/*
                                     new InlineKeyboardButton[]
                                     {
                                         InlineKeyboardButton
                                             .WithCallbackData(text: "Bot haqida", callbackData: "info")
-                                    },
+                                    },*/
                                     new InlineKeyboardButton[]
                                     {
                                         InlineKeyboardButton.WithUrl(text: "➕ Gruppaga Qoʻshish➕",
@@ -191,8 +190,8 @@ namespace Foydali_tozalovchibot.Controllers
                                     },
                                     new InlineKeyboardButton[]
                                     {
-                                        InlineKeyboardButton.WithUrl(text:"saytga o'tamiz",
-                                            url:$"https://google.com/salom")
+                                        InlineKeyboardButton.WithUrl(text:"Bot haqida",
+                                            url:$"{url}")
                                     }
                                 }
                             );
@@ -211,7 +210,7 @@ namespace Foydali_tozalovchibot.Controllers
             }
             catch (Exception ex)
             {
-                await botClient.SendTextMessageAsync(adminId[0], ex.Message);
+                await botClient.SendTextMessageAsync(adminId[0], "Xabar_Kelganda delegatetidan error:\n" + ex.Message);
             }
         }
         private async void InlineKeyboardButtonCallback(object sender, CallbackQueryEventArgs e)
@@ -225,32 +224,40 @@ namespace Foydali_tozalovchibot.Controllers
         {
             try
             {
+                ChatMemberStatus? status;
                 //await System.IO.File.WriteAllTextAsync("json.json", JsonConvert.SerializeObject(e.Update));
                 if (JsonConvert.SerializeObject(e.Update.MyChatMember) != "null")
                 {
-                    dynamic status = e.Update?.MyChatMember?.NewChatMember?.Status;
+                    status = e.Update.MyChatMember.NewChatMember.Status;
                     if (status == ChatMemberStatus.Administrator)
                     {
-                        await botClient.SendTextMessageAsync(e.Update.MyChatMember.Chat.Id, "Bot guruhda administrator bo'ldi!");
-                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "up");
+                        //await botClient.SendTextMessageAsync(e.Update.MyChatMember.Chat.Id, "Bot guruhda administrator bo'ldi!");
+                        //up
+                        fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "up");
                     }
                     else if (status == ChatMemberStatus.Member)
                     {
-                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "add");
+                        fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "add");
                     }
                     else if (status == ChatMemberStatus.Left)
                     {
-                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "del");
+                        //del
+                        fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "del");
                     }
                     else if (status == ChatMemberStatus.Kicked)
                     {
-                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "del");
+                        //del
+                        fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "del");
                     }
                     else if (status == ChatMemberStatus.Restricted)
                     {
-                        await fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "add");
+                        //add
+                        fun(e.Update.MyChatMember.Chat.Id, e.Update.MyChatMember.Chat.Type, status, "add");
                     }
-                    //await botClient.SendTextMessageAsync(adminId[0], JsonConvert.SerializeObject(status));
+                    else
+                    {
+                         await botClient.SendTextMessageAsync(adminId[0], JsonConvert.SerializeObject(status));
+                    }
                 }
             }
             catch (Exception ex)
@@ -260,55 +267,74 @@ namespace Foydali_tozalovchibot.Controllers
         }
 
         // funk ga "del", "add", "up" yuborish mumkin
-        private async void fun(ChatId id, ChatType type, ChatMemberStatus status, string funk)
+        private async void fun(ChatId id, ChatType type, ChatMemberStatus? status, string funk)
         {
             try
             {
+                int i = 0;
+                bool x = false;
                 if (funk == "add")
                 {
-                    dBs.Add(new DB()
+                    int n = Program.dBs.Count;
+                    bool bormi = false;
+                    for (int j = 0; j < n; j++)
                     {
-                        chatId = id,
-                        chatType = type,
-                        status = status,
-                    });
-                    await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
-                    dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
+                        if (Program.dBs[j].chatId == id)
+                        {
+                            Program.dBs[j].chatType = type;
+                            Program.dBs[j].status = status;
+                            bormi = true;
+                            break;
+                        }
+                    }
+                    if (!bormi)
+                        Program.dBs.Add(new DB()
+                        {
+                            chatId = id,
+                            chatType = type,
+                            status = status,
+                        });
+                    await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(Program.dBs));
                     return;
                 }
-                dBs.ForEach(async dbx =>
+                if (funk == "del")
                 {
-                    if (dbx.chatId == id)
+                    int n = Program.dBs.Count;
+                    for (int j = 0; j < n; j++)
                     {
-                        if (funk == "del")
+                        if (Program.dBs[j].chatId == id)
                         {
-                            dBs.Remove(dbx);
-                            await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
-                            dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
-                            return;
-                        }
-                        else if (funk == "up")
-                        {
-                            dBs.Remove(dbx);
-                            dbx.chatId = id;
-                            dbx.chatType = type;
-                            dbx.status = status;
-                            dBs.Add(dbx);
-                            await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
-                            dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
+                            Program.dBs.RemoveAt(j);
+                            await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(Program.dBs));
                             return;
                         }
                     }
-                });
-                dBs.Add(new DB()
+                    return;
+                }
+                if (funk == "up")
                 {
-                    chatId = id,
-                    chatType = type,
-                    status = status,
-                });
-                await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(dBs));
-                dBs = JsonConvert.DeserializeObject<List<DB>>(await System.IO.File.ReadAllTextAsync("db.json"));
-                return;
+                    int n = Program.dBs.Count;
+                    bool bormi = false;
+                    for (int j = 0; j < n; j++)
+                    {
+                        if (Program.dBs[j].chatId == id)
+                        {
+                            Program.dBs[j].chatType = type;
+                            Program.dBs[j].status = status;
+                            bormi = true;
+                            break;
+                        }
+                    }
+                    if (!bormi)
+                        Program.dBs.Add(new DB()
+                        {
+                            chatId = id,
+                            chatType = type,
+                            status = status,
+                        });
+                    await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(Program.dBs));
+                    return;
+                }
             }
             catch (Exception ex)
             {

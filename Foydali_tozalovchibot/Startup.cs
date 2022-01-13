@@ -44,6 +44,7 @@ namespace Foydali_tozalovchibot
             });
             app.UseRouting();
 
+
             app.UseEndpoints(endpoints =>
             {
                 //urller boshqaruvi
