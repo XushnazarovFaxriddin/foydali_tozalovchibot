@@ -13,6 +13,8 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types.ReplyMarkups;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Foydali_tozalovchibot.ViewModels;
+using System.Net;
 
 namespace Foydali_tozalovchibot.Controllers
 {
@@ -39,12 +41,13 @@ namespace Foydali_tozalovchibot.Controllers
         // adminlarning Id lari
         private static long[] adminId = new long[] { 1092338349, 583526419 };
         // botClient obyektiga API:Token yordamida botni ulash
-        private static TelegramBotClient botClient = new("5063739606:AAFWQr7XN4mVpSOW_HHP_q1rwAbvOtR5Mdw");
+        private static string botAPI = "5063739606:AAFWQr7XN4mVpSOW_HHP_q1rwAbvOtR5Mdw";
+        private static TelegramBotClient botClient = new(botAPI);
         public string Index()
         {
             botClient.OnMessage += Xabar_Kelganda;
             botClient.OnUpdate += Xabar_Yangilanganda;
-            botClient.OnCallbackQuery += InlineKeyboardButtonCallback;
+            //botClient.OnCallbackQuery += InlineKeyboardButtonCallback;
             botClient.StartReceiving();
             return "Bot Ishlamoqda!";
         }
@@ -79,17 +82,17 @@ namespace Foydali_tozalovchibot.Controllers
                 if (rekYubor && adminId.Contains<long>(chatId))
                 {
                     int count = 0;
-                    Program.dBs.ForEach(async (s) =>
+                    Program.dBs.ForEach((s) =>
                     {
                         try
                         {
-                            await botClient.ForwardMessageAsync(s.chatId, chatId, msgId);
+                            botClient.ForwardMessageAsync(s.chatId, chatId, msgId);
                             count++;
                         }
                         catch { }
                     });
                     rekYubor = false;
-                    await botClient.SendTextMessageAsync(chatId, $"reklama {count} ta guruh va foydalanuvchilarga yuborildi yuborildi");
+                    await botClient.SendTextMessageAsync(chatId, $"reklama {count} ta guruh va foydalanuvchilarga yuborildi yuborildi.");
                     /* await botClient.ForwardMessageAsync(adminId[1], chatId, msgId);
                      rekYubor = false;
                      await botClient.SendTextMessageAsync(chatId, "reklama yuborildi");*/
@@ -200,6 +203,7 @@ namespace Foydali_tozalovchibot.Controllers
                                text: "Bu bot gruppangizdagi reklama va kirdi-chiqdilarini tozalaydi.",
                                replyMarkup: markup
                            );
+                            fun(chatId, chatType, ChatMemberStatus.Member, "add");
                         }
                         else
                         {
@@ -210,15 +214,16 @@ namespace Foydali_tozalovchibot.Controllers
             }
             catch (Exception ex)
             {
-                await botClient.SendTextMessageAsync(adminId[0], "Xabar_Kelganda delegatetidan error:\n" + ex.Message);
+                if (ex.Message != "Forbidden: bot was kicked from the supergroup chat")
+                    await botClient.SendTextMessageAsync(adminId[0], "Xabar_Kelganda delegatetidan error:\n" + ex.Message);
             }
-        }
+        }/*
         private async void InlineKeyboardButtonCallback(object sender, CallbackQueryEventArgs e)
         {
             if (e.CallbackQuery.Data != "join Group")
                 await botClient
                    .SendTextMessageAsync(e.CallbackQuery.From.Id, e.CallbackQuery.Data);
-        }
+        }*/
 
         private async void Xabar_Yangilanganda(object sender, UpdateEventArgs e)
         {
@@ -256,7 +261,7 @@ namespace Foydali_tozalovchibot.Controllers
                     }
                     else
                     {
-                         await botClient.SendTextMessageAsync(adminId[0], JsonConvert.SerializeObject(status));
+                        //await botClient.SendTextMessageAsync(adminId[0], JsonConvert.SerializeObject(status));
                     }
                 }
             }
@@ -279,10 +284,10 @@ namespace Foydali_tozalovchibot.Controllers
                     bool bormi = false;
                     for (int j = 0; j < n; j++)
                     {
-                        if (Program.dBs[j].chatId == id)
+                        if (Program.dBs[j].chatId == Convert.ToInt64(id))
                         {
-                            Program.dBs[j].chatType = type;
-                            Program.dBs[j].status = status;
+                            Program.dBs[j].chatType = type.ToString().ToLower();
+                            Program.dBs[j].status = status.ToString().ToLower();
                             bormi = true;
                             break;
                         }
@@ -290,9 +295,9 @@ namespace Foydali_tozalovchibot.Controllers
                     if (!bormi)
                         Program.dBs.Add(new DB()
                         {
-                            chatId = id,
-                            chatType = type,
-                            status = status,
+                            chatId = Convert.ToInt64(id),
+                            chatType = type.ToString().ToLower(),
+                            status = status.ToString().ToLower()
                         });
                     await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(Program.dBs));
                     return;
@@ -302,7 +307,7 @@ namespace Foydali_tozalovchibot.Controllers
                     int n = Program.dBs.Count;
                     for (int j = 0; j < n; j++)
                     {
-                        if (Program.dBs[j].chatId == id)
+                        if (Program.dBs[j].chatId == Convert.ToInt64(id))
                         {
                             Program.dBs.RemoveAt(j);
                             await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(Program.dBs));
@@ -317,10 +322,10 @@ namespace Foydali_tozalovchibot.Controllers
                     bool bormi = false;
                     for (int j = 0; j < n; j++)
                     {
-                        if (Program.dBs[j].chatId == id)
+                        if (Program.dBs[j].chatId == Convert.ToInt64(id))
                         {
-                            Program.dBs[j].chatType = type;
-                            Program.dBs[j].status = status;
+                            Program.dBs[j].chatType = type.ToString().ToLower();
+                            Program.dBs[j].status = status.ToString().ToLower();
                             bormi = true;
                             break;
                         }
@@ -328,9 +333,9 @@ namespace Foydali_tozalovchibot.Controllers
                     if (!bormi)
                         Program.dBs.Add(new DB()
                         {
-                            chatId = id,
-                            chatType = type,
-                            status = status,
+                            chatId = Convert.ToInt64(id),
+                            chatType = type.ToString().ToLower(),
+                            status = status.ToString().ToLower()
                         });
                     await System.IO.File.WriteAllTextAsync("db.json", JsonConvert.SerializeObject(Program.dBs));
                     return;
@@ -343,14 +348,43 @@ namespace Foydali_tozalovchibot.Controllers
         }
         public IActionResult Info()
         {
-            return View();
+            long all = 0;
+            string urlAllMembers = "https://api.telegram.org/bot" + botAPI + "/getChatMembersCount?chat_id=";
+            WebClient wc = new WebClient();
+            GroupMemberCount groupMemberCount = new();
+            for (int i = 0; i < Program.dBs.Count; i++)
+            {
+                try
+                {
+                    string json = wc.DownloadString(urlAllMembers + Program.dBs[i].chatId);
+                    groupMemberCount = JsonConvert.DeserializeObject<GroupMemberCount>(json);
+                    if (groupMemberCount != null && groupMemberCount.Ok)
+                    {
+                        all += groupMemberCount.Result;
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            BotInfoViewModel viewModel = new()
+            {
+                dBs = Program.dBs,
+                allMember = all
+            };
+            return View(viewModel);
         }
 
+        public string dbJson()
+        {
+            return JsonConvert.SerializeObject(Program.dBs);
+        }
 
         [Route("/NotFound")]
-        public IActionResult NotFound()
+        public string NotFound()
         {
-            return View();
+            return "sahifa topilmadi. 404";
         }
     }
 }

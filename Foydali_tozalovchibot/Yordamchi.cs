@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,5 +25,13 @@ namespace Foydali_tozalovchibot
             }
             catch { return false; }
         }
+    }
+    public class GroupMemberCount
+    {
+        [JsonProperty("ok")]
+        public bool Ok { get; set; }
+
+        [JsonProperty("result")]
+        public long Result { get; set; }
     }
 }

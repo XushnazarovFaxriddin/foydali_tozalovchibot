@@ -31,6 +31,7 @@ namespace Foydali_tozalovchibot
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                
             }
             app.Use(async (ctx, next) =>
             {
@@ -42,6 +43,8 @@ namespace Foydali_tozalovchibot
                     await next();
                 }
             });
+            app.UseStaticFiles();
+
             app.UseRouting();
 
 
@@ -49,7 +52,7 @@ namespace Foydali_tozalovchibot
             {
                 //urller boshqaruvi
                 endpoints.MapControllerRoute(name: "default",
-                    pattern:"{controller=Bot}/{action=Index}/");
+                    pattern: "{controller=Bot}/{action=Index}/");
             });
         }
     }

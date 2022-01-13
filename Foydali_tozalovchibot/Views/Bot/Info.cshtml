@@ -1,17 +1,207 @@
-﻿<div class="col-xl-4 col-lg-5">
-    <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Donut Chart</h6>
+﻿@model BotInfoViewModel
+@{
+    int admins = 0, groups = 0, foydalanuvchi=0;
+    foreach(DB db in @Model.dBs)
+    {
+        if (db.chatType == "private")
+        {
+            foydalanuvchi++;
+        }
+        else
+        {
+            groups++;
+            if (db.status == "administrator")
+            {
+                admins++;
+            }
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Foydali_TozalovchiBot</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Template Main CSS File -->
+    <link rel="stylesheet" href="~/css/style-one.css">
+    <style>
+        .apexcharts-legend-text {
+            font-size: 18px!important;
+        }
+        
+        .apexcharts-legend-marker {
+            height: 16px!important;
+            width: 16px!important;
+        }
+    </style>
+    <!--=======================================================* Template Name: NiceAdmin - v2.2.0 * Template URL: https: //bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ * Author: BootstrapMade.com * License: https://bootstrapmade.com/license/========================================================-
+    -->
+</head>
+
+<body>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+            <a href="https://t.me/Foydali_TozalovchiBot" class="logo d-flex align-items-center">
+                <img asp-append-version="true" src="~/images/logo.png" alt="">
+                <span class="logo1">Foydali Tozalovchi Bot</span>
+            </a>
+
+            <nav id="navbar" class="navbar">
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+            <!-- .navbar -->
+
         </div>
-        <!-- Card Body -->
-        <div class="card-body">
-            <div class="chart-pie pt-4">
-                <canvas id="myPieChart"></canvas>
+    </header>
+    <!-- End Header -->
+    <!-- ======= Hero Section ======= -->
+    <section id="hero" class="hero d-flex align-items-center">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 d-flex flex-column justify-content-center">
+                    <h1 data-aos="fade-up">Foydali Tozalovchi Bot nima qiladi?</h1>
+                    <h2 data-aos="fade-up" data-aos-delay="400">Botni guruhingizga qo'shing va uni admin qiling. Bot guruhingizdagi kirdi-chiqdi va ortiqcha reklamalarni tozalaydi. 😉 </h2>
+                    <div data-aos="fade-up" data-aos-delay="600">
+                        <div class="text-center text-lg-start">
+                            <a href="#card" class="blablabla btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
+                                <span>Bot Statistikasi</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-img" data-aos="zoom-out" data-aos-delay="200">
+                    <img asp-append-version="true" src="~/images/vani-gif.gif" class="img-fluid" alt="">
+                </div>
             </div>
-            <hr>
-            Styling for the donut chart can be found in the
-            <code>/js/demo/chart-pie-demo.js</code> file.
+        </div>
+
+    </section>
+    <!-- End Hero -->
+    <div class="container-xl">
+        <div id="card" class="card">
+            <div class="card-body">
+                <h5 class="card-title">Bot Statistikasi</h5>
+                <!-- Donut Chart -->
+                <div id="donutChart">
+                </div>
+                <!-- End Donut Chart -->
+                <table class="rwd-table">
+                    <tbody>
+                        <tr>
+                            <th>Vazifasi</th>
+                            <th>Soni</th>
+                        </tr>
+                        <tr>
+                            <td data-th="Vazifasi">
+                                Barcha bot a'zo bo'lgan guruh azolari
+                            </td>
+                            <td data-th="Soni">
+                                @Model.allMember
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-th="Vazifasi">
+                                Bot a'zo bo'lgan guruhlar
+                            </td>
+                            <td data-th="Soni">
+                                @groups
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-th="Vazifasi">
+                                Bot Admin bo'lgan guruhlar
+                            </td>
+                            <td data-th="Soni">
+                                @admins
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-th="Vazifasi">
+                                Bot foydalanuvchilari
+                            </td>
+                            <td data-th="Soni">
+                                @foydalanuvchi
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
         </div>
     </div>
-</div>
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+
+        <div class="container" data-aos="fade-up">
+            <div class="row gx-0">
+
+                <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="content">
+                        <h3>Dasturchi haqida:</h3>
+                        <h2>FullStack .NET dasturchi Faxriddin Xushnazarov</h2>
+                        <p>
+                            Siz ham endi biz bilan o'zingiz istagan Web, Mobile, Desktop, Telegram bot hamda Game dasturlaringizni yaratishingiz mumkin. Biz sizning dasturlaringizni chiroyli dizayn, haqiqiy turbo tezlik va kuchli xavsizlik hamda professional dasturchilar jamoasi
+                            bilan birga tuzib berishimiz mumkin. 😊😉👇 Tel: <a href="tel:936831555">+998 (93) 683-15-55</a>
+                        </p>
+                        <div class="text-center text-lg-start">
+                            <a href="https://t.me/xushnazarov_555" class="blablabla btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
+                                <span>Telegram</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rasm col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+                    <img asp-append-version="true" src="~/images/C-.Net-baner.png" class="img-fluid" alt="">
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+    <!-- End About Section -->
+    <!-- Vendor JS Files -->
+    <script src="~/js/apexcharts.min.js" asp-append-version="true"></script>
+    <script src="~/js/main.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+                new ApexCharts(document.querySelector("#donutChart"), {
+                    series: [@groups, @foydalanuvchi, @admins],
+                    chart: {
+                        height: 450,
+                        type: 'donut',
+                        toolbar: {
+                            show: true
+                        }
+                    },
+                    labels: ["Groups", "Users", "Admin"],
+                }).render();
+            }
+
+        );
+    </script>
+    <!-- Template Main JS File -->
+    <!-- <script src="assets/js/main.js "></script>-->
+
+</body>
+
+</html>
