@@ -57,7 +57,7 @@ namespace Foydali_tozalovchibot.Controllers
             try
             {
                 //Console.WriteLine(JsonConvert.SerializeObject(e.Message));
-
+                MessageEntityType? msgEnType = null;
                 long botId = 5063739606;
                 long chatId = e.Message.Chat.Id;
                 int msgId = e.Message.MessageId;
@@ -98,21 +98,34 @@ namespace Foydali_tozalovchibot.Controllers
                      await botClient.SendTextMessageAsync(chatId, "reklama yuborildi");*/
                 }
 
-                // yuborilgan xabardagi matnni olish
-                if (types.Contains(msgType))
-                {
-                    try
-                    {
-                        msg = e.Message.Caption;
-                    }
-                    catch
-                    {
-                        msg = "ERROR!";
-                    }
-                }
-
                 if (chatType == ChatType.Supergroup || chatType == ChatType.Group)
                 {
+
+                    // yuborilgan xabardagi matnni olish
+                    if (msgType != MessageType.Text)
+                    {
+                        if(JsonConvert.SerializeObject(e.Message?.CaptionEntities[0]?.Type) != "null")
+                        try
+                        {
+                            msgEnType = e.Message?.CaptionEntities[0]?.Type;
+                            msg = e.Message.Caption;
+                        }
+                        catch
+                        {
+                            msg = "ERROR!";
+                            msgEnType = null;
+                        }
+                    }
+                    else
+                    {
+                        if(JsonConvert.SerializeObject(e.Message.Entities[0].Type) != "null")
+                        try
+                        {
+                            msgEnType = e.Message?.Entities[0]?.Type;
+                        }
+                        catch { msgEnType = null; }
+                    }
+
                     if (role == ChatMemberStatus.Administrator)
                     {
                         if (msgType == MessageType.ChatMemberLeft || msgType == MessageType.ChatMembersAdded)
@@ -130,8 +143,14 @@ namespace Foydali_tozalovchibot.Controllers
                                 //await botClient.SendTextMessageAsync(chatId, chatType.ToString());
                             }
                         }
-                        else if (Yordamchi.Reklama(msg) && !(userRole == ChatMemberStatus.Administrator || userRole == ChatMemberStatus.Creator))
+                        else if ((msgEnType == MessageEntityType.Url
+                            || msgEnType == MessageEntityType.TextLink
+                            || msgEnType == MessageEntityType.TextMention
+                            || msgEnType == MessageEntityType.Mention) &&
+                            !(userRole == ChatMemberStatus.Administrator
+                            || userRole == ChatMemberStatus.Creator))
                         {
+                            //await botClient.SendTextMessageAsync(chatId, JsonConvert.SerializeObject(e.Message));
                             try
                             {
                                 await botClient.DeleteMessageAsync(chatId, msgId);
